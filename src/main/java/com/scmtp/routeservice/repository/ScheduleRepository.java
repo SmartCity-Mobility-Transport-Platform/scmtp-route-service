@@ -21,6 +21,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, UUID> {
             @Param("dayOfWeek") String dayOfWeek,
             @Param("fromTime") OffsetDateTime fromTime
     );
+    
+    @Query("select s from Schedule s join fetch s.route where s.route.id = :routeId")
+    List<Schedule> findByRouteId(@Param("routeId") UUID routeId);
 }
 
 

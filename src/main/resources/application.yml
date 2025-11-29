@@ -6,7 +6,7 @@ spring:
     name: scmtp-route-service
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/scmtp_route}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5435/scmtp_route}
     username: ${SPRING_DATASOURCE_USERNAME:scmtp}
     password: ${SPRING_DATASOURCE_PASSWORD:scmtp}
     driver-class-name: org.postgresql.Driver
@@ -17,7 +17,14 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    show-sql: true
+    show-sql: false
+    open-in-view: true
+
+  graphql:
+    path: /graphql
+    graphiql:
+      enabled: true
+      allowed-origins: "http://localhost:3001,http://localhost:3000,http://127.0.0.1:3001,http://127.0.0.1:3000"
 
 management:
   endpoints:
@@ -28,12 +35,3 @@ management:
     health:
       probes:
         enabled: true
-
-spring:
-  graphql:
-    path: /graphql
-    graphiql:
-      enabled: true
-
-
-

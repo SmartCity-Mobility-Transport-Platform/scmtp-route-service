@@ -73,6 +73,14 @@ public class Schedule {
         this.daysOfWeek = daysOfWeek;
     }
 
+    // GraphQL resolver method for routeId
+    public UUID getRouteId() {
+        if (route != null && route.getId() != null) {
+            return route.getId();
+        }
+        return null;
+    }
+
     @PrePersist
     public void prePersist() {
         if (id == null) {

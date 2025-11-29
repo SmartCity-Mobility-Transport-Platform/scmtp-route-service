@@ -1,5 +1,6 @@
 package com.scmtp.routeservice.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -17,11 +18,12 @@ public class Route {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "route", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Schedule> schedules = new ArrayList<>();
+    // Using LAZY fetch - GraphQL resolvers will handle loading
+    @OneToMany(mappedBy = "route", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Schedule> schedules;
 
-    @OneToMany(mappedBy = "route", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RouteStop> routeStops = new ArrayList<>();
+    @OneToMany(mappedBy = "route", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<RouteStop> routeStops;
 
     public Route() {
     }
@@ -42,7 +44,9 @@ public class Route {
         this.name = name;
     }
 
+    @JsonIgnore
     public List<Schedule> getSchedules() {
+        // Return null if not set - GraphQL resolver will handle it
         return schedules;
     }
 
@@ -50,7 +54,9 @@ public class Route {
         this.schedules = schedules;
     }
 
+    @JsonIgnore
     public List<RouteStop> getRouteStops() {
+        // Return null if not set - GraphQL resolver will handle it
         return routeStops;
     }
 

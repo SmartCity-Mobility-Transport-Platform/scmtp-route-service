@@ -14,7 +14,7 @@ type Stop {
 
 type Schedule {
   id: ID!
-  routeId: ID!
+  routeId: ID
   departureTime: String!
   arrivalTime: String!
   daysOfWeek: [String!]!

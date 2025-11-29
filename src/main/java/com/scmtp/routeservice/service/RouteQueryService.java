@@ -4,10 +4,13 @@ import com.scmtp.routeservice.domain.Route;
 import com.scmtp.routeservice.domain.RouteStop;
 import com.scmtp.routeservice.domain.Schedule;
 import com.scmtp.routeservice.domain.Stop;
+import com.scmtp.routeservice.dto.RouteDTO;
 import com.scmtp.routeservice.repository.RouteRepository;
 import com.scmtp.routeservice.repository.RouteStopRepository;
 import com.scmtp.routeservice.repository.ScheduleRepository;
 import com.scmtp.routeservice.repository.StopRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,23 +32,42 @@ public class RouteQueryService {
     private final StopRepository stopRepository;
     private final RouteStopRepository routeStopRepository;
     private final ScheduleRepository scheduleRepository;
+    private final EntityManager entityManager;
 
     public RouteQueryService(RouteRepository routeRepository,
                              StopRepository stopRepository,
                              RouteStopRepository routeStopRepository,
-                             ScheduleRepository scheduleRepository) {
+                             ScheduleRepository scheduleRepository,
+                             EntityManager entityManager) {
         this.routeRepository = routeRepository;
         this.stopRepository = stopRepository;
         this.routeStopRepository = routeStopRepository;
         this.scheduleRepository = scheduleRepository;
+        this.entityManager = entityManager;
     }
 
-    public List<Route> getAllRoutes() {
-        return routeRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<RouteDTO> getAllRoutes() {
+        // Use EntityManager directly to avoid Spring Data JPA issues
+        // Fetch routes without collections to avoid multiple bag fetch
+        // GraphQL resolvers will fetch stops and schedules separately
+        Query query = entityManager.createNativeQuery("SELECT id, name FROM routes");
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = query.getResultList();
+        return results.stream()
+                .map(row -> new RouteDTO((UUID) row[0], (String) row[1]))
+                .collect(Collectors.toList());
     }
 
     public Optional<Route> getRouteById(UUID id) {
-        return routeRepository.findById(id);
+        // Use standard repository method to avoid native query casting issues
+        return routeRepository.findById(id).map(route -> {
+            // Create a new Route with only basic fields to avoid lazy loading issues
+            Route basicRoute = new Route();
+            basicRoute.setId(route.getId());
+            basicRoute.setName(route.getName());
+            return basicRoute;
+        });
     }
 
     public List<Stop> findStopsByLocation(double lat, double lng, double radiusKm) {
