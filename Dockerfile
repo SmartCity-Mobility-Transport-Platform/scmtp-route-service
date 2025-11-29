@@ -8,7 +8,7 @@ RUN mvn -q -e -B dependency:go-offline
 COPY src ./src
 RUN mvn -q -e -B package -DskipTests
 
-FROM eclipse-temurin:17-jre-alpine AS runtime
+FROM eclipse-temurin:17-jre AS runtime
 
 WORKDIR /app
 
