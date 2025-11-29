@@ -1,0 +1,39 @@
+server:
+  port: ${SERVER_PORT:4000}
+
+spring:
+  application:
+    name: scmtp-route-service
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/scmtp_route}
+    username: ${SPRING_DATASOURCE_USERNAME:scmtp}
+    password: ${SPRING_DATASOURCE_PASSWORD:scmtp}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+spring:
+  graphql:
+    path: /graphql
+    graphiql:
+      enabled: true
+
+
+

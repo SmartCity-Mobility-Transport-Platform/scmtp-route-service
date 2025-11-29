@@ -1,0 +1,31 @@
+type Route {
+  id: ID!
+  name: String!
+  stops: [Stop!]!
+  schedules: [Schedule!]!
+}
+
+type Stop {
+  id: ID!
+  name: String!
+  latitude: Float!
+  longitude: Float!
+}
+
+type Schedule {
+  id: ID!
+  routeId: ID!
+  departureTime: String!
+  arrivalTime: String!
+  daysOfWeek: [String!]!
+}
+
+type Query {
+  routes: [Route!]!
+  route(id: ID!): Route
+  stopsByLocation(lat: Float!, lng: Float!, radiusKm: Float!): [Stop!]!
+  nextDepartures(stopId: ID!, fromTime: String!): [Schedule!]!
+}
+
+
+
